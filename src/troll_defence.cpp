@@ -28,7 +28,6 @@ std::string troll_defence(std::string troll_message) {
 
     }
 
-    std::cout << troll_message << std::endl;
-    return 0;
+    return troll_message;
 
 }

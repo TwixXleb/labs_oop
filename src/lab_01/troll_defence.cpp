@@ -1,5 +1,5 @@
 #include <iostream>
-#include "troll_defence.h"
+#include "../../include/troll_defence.h"
 #include <string>
 bool isvowel(char letter) {
 

@@ -1,10 +1,12 @@
 #include <iostream>
-
-#include "lib.h"
-
-using namespace std;
+#include <string>
+#include "include/troll_defence.h"
 
 int main() {
-    cout << "Bruh: " << endl
-         << A() << endl;
+
+    std::string troll_message;
+    getline(std::cin, troll_message);
+    troll_defence(troll_message);
+    return 0;
+
 }

@@ -12,8 +12,7 @@ bool isvowel(char letter) {
 
     }
 
-    if (k == 1) return true;
-    else return false;
+    return k == 1;
 
 }
 

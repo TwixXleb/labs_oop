@@ -89,7 +89,7 @@ Money::Money(Currency currency) : size(2), currency_type(currency) {
     for(size_t i = 2; i < MAX_BALANCE; ++i) balance[i] = 0;
 }
 
-void Money::check_balance() const {
+std::string Money::check_balance() const {
     std::string integer_part = "";
     long long total_cents = get_total_cents();
     long long integer = total_cents / 100;

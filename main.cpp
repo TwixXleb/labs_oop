@@ -11,13 +11,13 @@ int main() {
     std::cout << result << std::endl;
 
     Money yens("456.00", Currency::JPY);
-    yens.check_balance();
+    std::cout << yens.check_balance() << std::endl;
     yens.withdraw("100.00");
-    yens.check_balance();
+    std::cout << yens.check_balance() << std::endl;
     yens.add("200.50");
-    yens.check_balance();
+    std::cout << yens.check_balance() << std::endl;
     yens.convert_to(Currency::EUR);
-    yens.check_balance();
+    std::cout << yens.check_balance() << std::endl;
 
     return 0;
 

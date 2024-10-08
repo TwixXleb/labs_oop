@@ -15,7 +15,6 @@ private:
     Currency currency_type;
 
     void delete_element(size_t index);
-    void deleting_zeroes();
     bool parse_amount(const std::string& amount, long long& total_cents) const;
     long long get_total_cents() const;
     void set_total_cents(long long total_cents);

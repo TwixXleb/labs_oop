@@ -1,4 +1,6 @@
-#include "../../include/Money.h"
+#include "Money.h"
+#include <algorithm>
+#include <stdexcept>
 
 void Money::delete_element(size_t index) {
     if(index >= size) throw std::out_of_range("Index is out of the array range");
@@ -11,25 +13,11 @@ void Money::delete_element(size_t index) {
     size--;
 }
 
-void Money::deleting_zeroes() {
-    if(size <= 2) return;
-
-    size_t last_int_pos = size - 1;
-
-    while(last_int_pos >= 2 && balance[last_int_pos] == 0) {
-        delete_element(last_int_pos);
-        if(last_int_pos == 2) break;
-        last_int_pos--;
-    }
-
-    if(size == 2) balance[size++] = 0;
-}
-
 bool Money::parse_amount(const std::string& amount, long long& total_cents) const {
     size_t pointer_pos = amount.find('.');
     if(pointer_pos == std::string::npos) pointer_pos = amount.find(',');
 
-    std::string int_amount = amount.substr(0, pointer_pos);
+    std::string int_amount = (pointer_pos != std::string::npos) ? amount.substr(0, pointer_pos) : amount;
     std::string frac_amount = (pointer_pos != std::string::npos) ? amount.substr(pointer_pos + 1) : "00";
 
     if(frac_amount.length() < 2) {
@@ -63,11 +51,19 @@ void Money::set_total_cents(long long total_cents) {
     balance[1] = (total_cents / 10) % 10;
     long long integer = total_cents / 100;
     size = 2;
-    while(integer > 0 && size < MAX_BALANCE) {
-        balance[size++] = integer % 10;
-        integer /= 10;
+
+    if(integer == 0) {
+        balance[size++] = 0;
+    } else {
+        std::string int_str = std::to_string(integer);
+        for(char c : int_str) {
+            if(size >= MAX_BALANCE) {
+                throw std::overflow_error("Превышен максимальный баланс.");
+            }
+            balance[size++] = c - '0';
+        }
     }
-    deleting_zeroes();
+
 }
 
 Money::Money(const std::string& amount, Currency currency) : size(2), currency_type(currency) {
@@ -77,7 +73,7 @@ Money::Money(const std::string& amount, Currency currency) : size(2), currency_t
 
     long long total_cents = 0;
     if(!parse_amount(amount, total_cents)) {
-        throw std::invalid_argument("Unsupported format.");
+        throw std::invalid_argument("Некорректный формат суммы.");
     }
 
     set_total_cents(total_cents);
@@ -102,10 +98,14 @@ std::string Money::check_balance() const {
             temp += std::to_string(integer % 10);
             integer /= 10;
         }
+        std::reverse(temp.begin(), temp.end());
 
-        for(int i = temp.length() - 1, count = 0; i >=0; --i, ++count) {
+        int len = temp.length();
+        for(int i = 0; i < len; ++i) {
             integer_part += temp[i];
-            if((count +1) %3 ==0 && i !=0) integer_part += " ";
+            if((len - i -1) %3 ==0 && i != len-1) {
+                integer_part += " ";
+            }
         }
     }
 
@@ -122,8 +122,7 @@ std::string Money::check_balance() const {
         default: currency_str = "UNKNOWN";
     }
 
-    std::string str_balance = integer_part + "." + fraction_part + " " + currency_str;
-    return str_balance;
+    return integer_part + "." + fraction_part + " " + currency_str;
 }
 
 void Money::convert_to(Currency target_currency) {
@@ -138,19 +137,21 @@ void Money::convert_to(Currency target_currency) {
             {Currency::CNY, 7.03}
     };
 
-    double total_usd = 0.0;
-    long long current_total_cents = get_total_cents();
-    total_usd = static_cast<double>(current_total_cents) / 100.0;
-
+    double total_usd = static_cast<double>(get_total_cents()) / 100.0;
     if (currency_type != Currency::USD) {
         auto it = rates_to_usd.find(currency_type);
-        if(it == rates_to_usd.end()) throw std::invalid_argument("Unsupported source currency.");
-        total_usd /= it->second;
+        if(it != rates_to_usd.end()) {
+            total_usd /= it->second;
+        } else {
+            throw std::invalid_argument("Unsupported source currency.");
+        }
     }
 
     auto it_target = rates_to_usd.find(target_currency);
     if(it_target == rates_to_usd.end()) throw std::invalid_argument("Unsupported target currency.");
-    double converted_amount = total_usd * it_target->second;
+    double rate_target = it_target->second;
+
+    double converted_amount = total_usd * rate_target;
 
     long long new_total_cents = static_cast<long long>(round(converted_amount * 100));
     set_total_cents(new_total_cents);
@@ -161,7 +162,7 @@ void Money::convert_to(Currency target_currency) {
 void Money::add(const std::string& amount) {
     long long add_cents = 0;
     if(!parse_amount(amount, add_cents)) {
-        throw std::invalid_argument("Unsupported format.");
+        throw std::invalid_argument("Некорректный формат суммы для добавления.");
     }
 
     long long current_cents = get_total_cents();
@@ -173,12 +174,12 @@ void Money::add(const std::string& amount) {
 void Money::withdraw(const std::string& amount) {
     long long withdraw_cents = 0;
     if(!parse_amount(amount, withdraw_cents)) {
-        throw std::invalid_argument("Unsupported format.");
+        throw std::invalid_argument("Некорректный формат суммы для снятия.");
     }
 
     long long current_cents = get_total_cents();
     if(withdraw_cents > current_cents) {
-        throw std::invalid_argument("Not enough money. Haha you little brokey.");
+        throw std::invalid_argument("Недостаточно средств для снятия.");
     }
 
     long long new_cents = current_cents - withdraw_cents;

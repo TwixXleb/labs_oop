@@ -23,7 +23,7 @@ private:
 public:
     Money(const std::string& amount = "0.00", Currency currency = Currency::RUB);
     Money(Currency currency);
-    void check_balance() const;
+    std::string check_balance() const;
     void convert_to(Currency target_currency);
 
     void add(const std::string& amount);

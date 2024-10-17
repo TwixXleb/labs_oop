@@ -100,7 +100,7 @@ TEST(PentagonTests, CopyAssignmentTest) {
 
 TEST(PentagonTests, EqualityTest) {
     Pentagon pentagon1(0.0, 0.0, 5.0);
-    Pentagon pentagon2(0.0, 0.0, 5.0)
+    Pentagon pentagon2(0.0, 0.0, 5.0);
 
     EXPECT_TRUE(pentagon1 == pentagon2);
 }

@@ -58,7 +58,7 @@ void Money::set_total_cents(long long total_cents) {
         std::string int_str = std::to_string(integer);
         for(char c : int_str) {
             if(size >= MAX_BALANCE) {
-                throw std::overflow_error("Превышен максимальный баланс.");
+                throw std::overflow_error("Too many money. Can u give me some? <3");
             }
             balance[size++] = c - '0';
         }
@@ -73,7 +73,7 @@ Money::Money(const std::string& amount, Currency currency) : size(2), currency_t
 
     long long total_cents = 0;
     if(!parse_amount(amount, total_cents)) {
-        throw std::invalid_argument("Некорректный формат суммы.");
+        throw std::invalid_argument("Unsupported format.");
     }
 
     set_total_cents(total_cents);
@@ -162,7 +162,7 @@ void Money::convert_to(Currency target_currency) {
 void Money::add(const std::string& amount) {
     long long add_cents = 0;
     if(!parse_amount(amount, add_cents)) {
-        throw std::invalid_argument("Некорректный формат суммы для добавления.");
+        throw std::invalid_argument("unsupported format.");
     }
 
     long long current_cents = get_total_cents();
@@ -174,12 +174,12 @@ void Money::add(const std::string& amount) {
 void Money::withdraw(const std::string& amount) {
     long long withdraw_cents = 0;
     if(!parse_amount(amount, withdraw_cents)) {
-        throw std::invalid_argument("Некорректный формат суммы для снятия.");
+        throw std::invalid_argument("Unsupported format");
     }
 
     long long current_cents = get_total_cents();
     if(withdraw_cents > current_cents) {
-        throw std::invalid_argument("Недостаточно средств для снятия.");
+        throw std::invalid_argument("Not enough money. Haha u lil brokey");
     }
 
     long long new_cents = current_cents - withdraw_cents;

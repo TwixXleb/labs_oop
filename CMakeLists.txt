@@ -22,7 +22,7 @@ file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false ${TEST_DIR}/*.cpp)
 
 add_library(${CMAKE_PROJECT_NAME}_lib ${SOURCES})
 
-add_executable(${CMAKE_PROJECT_NAME}_exe main.cpp)
+add_executable(${CMAKE_PROJECT_NAME}_exe main.cpp )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}_exe PRIVATE ${CMAKE_PROJECT_NAME}_lib)
 

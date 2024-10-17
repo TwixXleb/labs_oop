@@ -5,6 +5,7 @@
 Hexagon::Hexagon(double x, double y, double side_length) : center_coords(x, y) {
     vertices = new std::pair<double, double>[vertex_count];
     calculate_vertices(side_length);
+    side = side_length;
 }
 
 Hexagon::Hexagon(const Hexagon& other) : center_coords(other.center_coords) {
@@ -51,8 +52,8 @@ bool Hexagon::operator==(const Figure& other) const {
 }
 
 double Hexagon::area() const {
-    double s = std::sqrt(std::pow(vertices[0].first - vertices[1].first, 2) + std::pow(vertices[0].second - vertices[1].second, 2));
-    return (3.0 * std::sqrt(3) * s * s) / 2.0;
+    double s = ((3 * std::sqrt(3)) / 2) * std::pow(side, 2);
+    return s;
 }
 
 void Hexagon::print(std::ostream& os) const {

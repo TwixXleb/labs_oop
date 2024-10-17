@@ -8,6 +8,7 @@ private:
     std::pair<double, double> center_coords;
     std::pair<double, double>* vertices;
     size_t vertex_count = 6;
+    double side;
 
 public:
     Hexagon(double x = 0, double y = 0, double side_length = 1);

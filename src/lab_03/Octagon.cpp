@@ -5,6 +5,7 @@
 Octagon::Octagon(double x, double y, double side_length) : center_coords(x, y) {
     vertices = new std::pair<double, double>[vertex_count];
     calculate_vertices(side_length);
+    side = side_length;
 }
 
 Octagon::Octagon(const Octagon& other) : center_coords(other.center_coords) {
@@ -51,8 +52,8 @@ bool Octagon::operator==(const Figure& other) const {
 }
 
 double Octagon::area() const {
-    double s = std::sqrt(std::pow(vertices[0].first - vertices[1].first, 2) + std::pow(vertices[0].second - vertices[1].second, 2));
-    return 2.0 * (1 + std::sqrt(2)) * s * s;
+    double s = 2 * std::pow(side, 2) * (std::sqrt(2) + 1);
+    return s;
 }
 
 void Octagon::print(std::ostream& os) const {

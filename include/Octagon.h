@@ -8,6 +8,7 @@ private:
     std::pair<double, double> center_coords;
     std::pair<double, double>* vertices;
     size_t vertex_count = 8;
+    double side;
 
 public:
     Octagon(double x = 0, double y = 0, double side_length = 1);

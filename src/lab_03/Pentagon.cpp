@@ -4,6 +4,7 @@
 
 Pentagon::Pentagon(double x, double y, double side_length) : center_coords(x, y) {
     vertices = new std::pair<double, double>[vertex_count];
+    side = side_length;
     calculate_vertices(side_length);
 }
 
@@ -73,8 +74,9 @@ bool Pentagon::operator==(const Figure& other) const {
 }
 
 double Pentagon::area() const {
-    double s = std::sqrt(std::pow(vertices[0].first - vertices[1].first, 2) + std::pow(vertices[0].second - vertices[1].second, 2));
-    return (5.0 * s * s) / (4.0 * tan(M_PI / 5.0));
+    double tan_36 = 5 - 2 * sqrt(5);
+    double s = (5 * std::pow(side, 2)) / (4 * std::sqrt(tan_36));
+    return s;
 }
 
 void Pentagon::print(std::ostream& os) const {

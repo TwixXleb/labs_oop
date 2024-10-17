@@ -118,17 +118,17 @@ TEST(PentagonTests, MoveTest) {
 
     std::ostringstream os;
     os << pentagon;
-    std::string expected_output = "Pentagon with center (10, 10) and vertices: \n(15, 10)\n(11.5451, 14.7553)\n(5.95492, 12.9389)\n(5.95492, 7.06107)\n(11.5451, 5.24472)\n";
+    std::string expected_output = "Pentagon with center (10, 10) and vertices:\n(15, 10)\n(11.5451, 14.7553)\n(5.95492, 12.9389)\n(5.95492, 7.06107)\n(11.5451, 5.24472)\n";
     EXPECT_EQ(os.str(), expected_output);
 }
 
 TEST(PentagonTests, RotateTest) {
     Pentagon pentagon(0.0, 0.0, 5.0);
-    pentagon.rotate(M_PI / 2);
+    pentagon.rotate(3.14159 / 2);
 
     std::ostringstream os;
     os << pentagon;
-    std::string expected_output = "Pentagon with center (0, 0) and vertices: \n(0, 5)\n(-4.75528, 1.54508)\n(-2.93893, -4.04508)\n(2.93893, -4.04508)\n(4.75528, 1.54508)\n";
+    std::string expected_output = "Pentagon with center (0, 0) and vertices:\n(0, 5)\n(-4.75528, 1.54508)\n(-2.93893, -4.04508)\n(2.93893, -4.04508)\n(4.75528, 1.54508)\n";
     EXPECT_EQ(os.str(), expected_output);
 }
 

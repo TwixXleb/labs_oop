@@ -9,7 +9,6 @@ private:
     std::pair<double, double> center_coords;  // Центр фигуры
     std::pair<double, double>* vertices;      // Вершины фигуры (динамический массив)
     size_t vertex_count = 5;                  // Количество вершин (5 для пятиугольника)
-    void calculate_vertices(double side_length);
 
 public:
     Pentagon(double x = 0, double y = 0, double side_length = 1);

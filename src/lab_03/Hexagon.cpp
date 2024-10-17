@@ -8,7 +8,8 @@ Hexagon::Hexagon(double x, double y, double side_length) : center_coords(x, y) {
     side = side_length;
 }
 
-Hexagon::Hexagon(const Hexagon& other) : center_coords(other.center_coords) {
+Hexagon::Hexagon(const Hexagon& other) : side(other.side) {
+    center_coords = other.center_coords;
     vertices = new std::pair<double, double>[vertex_count];
     for (size_t i = 0; i < vertex_count; ++i) {
         vertices[i] = other.vertices[i];
@@ -16,13 +17,14 @@ Hexagon::Hexagon(const Hexagon& other) : center_coords(other.center_coords) {
 }
 
 Hexagon& Hexagon::operator=(const Hexagon& other) {
-    if (this != &other) {
-        center_coords = other.center_coords;
-        delete[] vertices;
-        vertices = new std::pair<double, double>[vertex_count];
-        for (size_t i = 0; i < vertex_count; ++i) {
-            vertices[i] = other.vertices[i];
-        }
+    if (this == &other) return *this;
+    side = other.side;
+
+    center_coords = other.center_coords;
+    delete[] vertices;
+    vertices = new std::pair<double, double>[vertex_count];
+    for (size_t i = 0; i < vertex_count; ++i) {
+        vertices[i] = other.vertices[i];
     }
     return *this;
 }

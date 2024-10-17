@@ -8,7 +8,8 @@ Pentagon::Pentagon(double x, double y, double side_length) : center_coords(x, y)
     calculate_vertices(side_length);
 }
 
-Pentagon::Pentagon(const Pentagon& other) : center_coords(other.center_coords) {
+Pentagon::Pentagon(const Pentagon& other) : side(other.side) {
+    center_coords = other.center_coords;
     vertices = new std::pair<double, double>[vertex_count];
     for (size_t i = 0; i < vertex_count; ++i) {
         vertices[i] = other.vertices[i];
@@ -16,13 +17,14 @@ Pentagon::Pentagon(const Pentagon& other) : center_coords(other.center_coords) {
 }
 
 Pentagon& Pentagon::operator=(const Pentagon& other) {
-    if (this != &other) {
-        center_coords = other.center_coords;
-        delete[] vertices;
-        vertices = new std::pair<double, double>[vertex_count];
-        for (size_t i = 0; i < vertex_count; ++i) {
-            vertices[i] = other.vertices[i];
-        }
+    if (this == &other) return *this;
+    side = other.side;
+
+    center_coords = other.center_coords;
+    delete[] vertices;
+    vertices = new std::pair<double, double>[vertex_count];
+    for (size_t i = 0; i < vertex_count; ++i) {
+        vertices[i] = other.vertices[i];
     }
     return *this;
 }

@@ -37,6 +37,6 @@ public:
 };
 
 // Implementation
-#include "Array_02.inl"
+#include "../src/lab_04/Array_02.inl"
 
 #endif //LAB0_FIGUREARRAY_02_H

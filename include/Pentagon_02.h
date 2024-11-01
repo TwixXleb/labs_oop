@@ -57,6 +57,6 @@ public:
 };
 
 // Implementation
-#include "Pentagon_02.inl"
+#include "../src/lab_04/Pentagon_02.inl"
 
 #endif //LAB0_PENTAGON_02_H

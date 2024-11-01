@@ -120,7 +120,7 @@ bool Pentagon_02<T>::operator<(const Pentagon_02& other) const {
 }
 
 template<Scalar T>
-bool Pentagon_02<T>::operator<<=(const Pentagon_02& other) const {
+bool Pentagon_02<T>::operator<=(const Pentagon_02& other) const {
     return this->Area() <= other.Area();
 }
 

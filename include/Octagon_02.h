@@ -57,6 +57,6 @@ public:
 };
 
 // Implementation
-#include "Octagon_02.inl"
+#include "../src/lab_04/Octagon_02.inl"
 
 #endif //LAB0_OCTAGON_02_H

@@ -57,6 +57,6 @@ public:
 };
 
 // Implementation
-#include "Hexagon_02.inl"
+#include "../src/lab_04/Hexagon_02.inl"
 
 #endif //LAB0_HEXAGON_02_H

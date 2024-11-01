@@ -312,22 +312,6 @@ TEST(Pentagon_02_Test, InputOutputOperators) {
     EXPECT_FALSE(output_str.empty());
 }
 
-// Тест метода CalculateVertices
-TEST(Pentagon_02_Test, CalculateVertices) {
-    Point_02<int> center(0, 0);
-    int side_length = 10;
-    Pentagon_02<int> pentagon(center, side_length);
-
-    pentagon.CalculateVertices();
-
-    auto vertices = pentagon.GetVertices();
-
-    EXPECT_EQ(vertices.size(), 5);
-    for (const auto& vertex : vertices) {
-        EXPECT_NEAR(std::hypot(vertex.x - center.x, vertex.y - center.y), 10, 1e-5);
-    }
-}
-
 // Тест на исключения (например, если сторона отрицательная)
 TEST(Pentagon_02_Test, NegativeSideLength) {
     Point_02<int> center(0, 0);

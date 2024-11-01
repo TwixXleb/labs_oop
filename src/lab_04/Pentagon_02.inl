@@ -64,6 +64,16 @@ Pentagon_02<T>& Pentagon_02<T>::operator=(Pentagon_02&& other) noexcept {
     return *this;
 }
 
+// Реализация метода GetVertices()
+template<Scalar T>
+std::vector<Point_02<T>> Pentagon_02<T>::GetVertices() const {
+    std::vector<Point_02<T>> vertices_copy;
+    for (const auto& vertex : vertices) {
+        vertices_copy.push_back(*vertex);
+    }
+    return vertices_copy;
+}
+
 template<Scalar T>
 void Pentagon_02<T>::Rotate(double angle_rad) {
     for (auto& vertex : vertices) {

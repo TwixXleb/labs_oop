@@ -19,6 +19,10 @@ private:
     void CalculateVertices();
 
 public:
+
+    // Публичный метод для доступа к вершинам
+    std::vector<Point_02<T>> GetVertices() const;
+
     // Constructors
     Pentagon_02();
     Pentagon_02(const Point_02<T>& center_, T side_length_);

@@ -221,18 +221,18 @@ TEST(Pentagon_02_Test, Rotate) {
     Pentagon_02<int> pentagon(center, side_length);
 
     // Копируем координаты вершин до поворота
-    std::vector<Point_02<int>> original_vertices;
-    for (const auto& vertex : pentagon.vertices) {
-        original_vertices.push_back(*vertex);
-    }
+    std::vector<Point_02<int>> original_vertices = pentagon.GetVertices();
 
     pentagon.Rotate(M_PI / 2); // Поворот на 90 градусов
+
+    // Получаем вершины после поворота
+    std::vector<Point_02<int>> rotated_vertices = pentagon.GetVertices();
 
     // Проверка, что вершины изменились после поворота
     bool all_vertices_changed = false;
     for (size_t i = 0; i < original_vertices.size(); ++i) {
-        if (original_vertices[i].x != pentagon.vertices[i]->x ||
-        original_vertices[i].y != pentagon.vertices[i]->y) {
+        if (original_vertices[i].x != rotated_vertices[i].x ||
+            original_vertices[i].y != rotated_vertices[i].y) {
             all_vertices_changed = true;
             break;
         }
@@ -320,9 +320,11 @@ TEST(Pentagon_02_Test, CalculateVertices) {
 
     pentagon.CalculateVertices();
 
-    EXPECT_EQ(pentagon.vertices.size(), 5);
-    for (const auto& vertex : pentagon.vertices) {
-        EXPECT_NEAR(std::hypot(vertex->x - center.x, vertex->y - center.y), 10, 1e-5);
+    auto vertices = pentagon.GetVertices();
+
+    EXPECT_EQ(vertices.size(), 5);
+    for (const auto& vertex : vertices) {
+        EXPECT_NEAR(std::hypot(vertex.x - center.x, vertex.y - center.y), 10, 1e-5);
     }
 }
 

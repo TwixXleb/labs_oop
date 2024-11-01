@@ -116,7 +116,7 @@ int main() {
         std::cout << "Center: " << octagon.Center() << "\n\n";
 
         // Сравниваем фигуры по площади
-        if (pentagon < hexagon) {
+        if (pentagon.Area() < hexagon.Area()) {
             std::cout << "Pentagon_02 has smaller area than Hexagon_02.\n";
         } else {
             std::cout << "Pentagon_02 has larger or equal area than Hexagon_02.\n";

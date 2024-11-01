@@ -7,6 +7,11 @@
 #include "include/Octagon.h"
 #include "include/FigureArray.h"
 #include "include/Pentagon.h"
+#include "include/Pentagon_02.h"
+#include "include/Hexagon_02.h"
+#include "include/Octagon_02.h"
+#include "include/Array_02.h"
+#include "include/Pentagon_02.h"
 
 int main() {
 
@@ -55,6 +60,76 @@ int main() {
     FigureArray movedArray = std::move(copiedArray);
     movedArray.print_all();
     std::cout << "=============================\n\n";
+
+    try {
+        // Создаем пятиугольник с центром в (0, 0) и длиной стороны 5
+        Point_02<int> center1(0, 0);
+        int side_length1 = 5;
+        Pentagon_02<int> pentagon(center1, side_length1);
+
+        // Выводим информацию о пятиугольнике
+        std::cout << "Pentagon_02:\n";
+        pentagon.Print(std::cout);
+        std::cout << "Area: " << pentagon.Area() << "\n";
+        std::cout << "Center: " << pentagon.Center() << "\n\n";
+
+        // Создаем шестиугольник с центром в (10, 10) и длиной стороны 7
+        Point_02<int> center2(10, 10);
+        int side_length2 = 7;
+        Hexagon_02<int> hexagon(center2, side_length2);
+
+        // Выводим информацию о шестиугольнике
+        std::cout << "Hexagon_02:\n";
+        hexagon.Print(std::cout);
+        std::cout << "Area: " << hexagon.Area() << "\n";
+        std::cout << "Center: " << hexagon.Center() << "\n\n";
+
+        // Создаем восьмиугольник с центром в (-5, -5) и длиной стороны 4
+        Point_02<int> center3(-5, -5);
+        int side_length3 = 4;
+        Octagon_02<int> octagon(center3, side_length3);
+
+        // Выводим информацию о восьмиугольнике
+        std::cout << "Octagon_02:\n";
+        octagon.Print(std::cout);
+        std::cout << "Area: " << octagon.Area() << "\n";
+        std::cout << "Center: " << octagon.Center() << "\n\n";
+
+        // Применяем некоторые преобразования
+        pentagon.Translate(2, 3);
+        hexagon.Rotate(M_PI / 4); // Поворот на 45 градусов
+        octagon.Translate(-3, 1);
+
+        // Выводим информацию после преобразований
+        std::cout << "After transformations:\n";
+
+        std::cout << "Pentagon_02:\n";
+        pentagon.Print(std::cout);
+        std::cout << "Center: " << pentagon.Center() << "\n\n";
+
+        std::cout << "Hexagon_02:\n";
+        hexagon.Print(std::cout);
+        std::cout << "Center: " << hexagon.Center() << "\n\n";
+
+        std::cout << "Octagon_02:\n";
+        octagon.Print(std::cout);
+        std::cout << "Center: " << octagon.Center() << "\n\n";
+
+        // Сравниваем фигуры по площади
+        if (pentagon < hexagon) {
+            std::cout << "Pentagon_02 has smaller area than Hexagon_02.\n";
+        } else {
+            std::cout << "Pentagon_02 has larger or equal area than Hexagon_02.\n";
+        }
+
+        // Преобразование к double для получения площади
+        double pentagon_area = static_cast<double>(pentagon);
+        std::cout << "Pentagon_02 area (via cast to double): " << pentagon_area << "\n";
+
+    } catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << "\n";
+    }
+
 
     return 0;
 

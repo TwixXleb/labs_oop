@@ -5,6 +5,9 @@
 #include "../include/Pentagon.h"
 #include "../include/Hexagon.h"
 #include "../include/Octagon.h"
+#include "../include/Pentagon_02.h"
+#include "../include/Hexagon_02.h"
+#include "../include/Octagon_02.h"
 
 // Тесты для первой лабы
 TEST(Troll_01, BasicTest) {
@@ -137,4 +140,218 @@ TEST(PentagonTests, AreaTest) {
     Pentagon pentagon(0.0, 0.0, 5.0);
     double expected_area = pentagon.area();
     EXPECT_NEAR(expected_area, 43.0119, 0.001);
+}
+
+//Тесты для пятиугольника для четвертой лабы
+
+// Тест конструктора по умолчанию
+TEST(Pentagon_02_Test, DefaultConstructor) {
+    Pentagon_02<int> pentagon;
+    EXPECT_EQ(pentagon.Center().x, 0);
+    EXPECT_EQ(pentagon.Center().y, 0);
+    EXPECT_EQ(pentagon.Area(), pentagon.Area()); // Проверка на отсутствие NaN
+}
+
+// Тест пользовательского конструктора
+TEST(Pentagon_02_Test, ParameterizedConstructor) {
+    Point_02<int> center(5, 5);
+    int side_length = 10;
+    Pentagon_02<int> pentagon(center, side_length);
+    EXPECT_EQ(pentagon.Center().x, 5);
+    EXPECT_EQ(pentagon.Center().y, 5);
+    EXPECT_DOUBLE_EQ(pentagon.Area(), (5.0 * side_length * side_length) / (4.0 * tan(M_PI / 5.0)));
+}
+
+// Тест копирования
+TEST(Pentagon_02_Test, CopyConstructor) {
+    Point_02<int> center(2, 3);
+    int side_length = 7;
+    Pentagon_02<int> pentagon1(center, side_length);
+    Pentagon_02<int> pentagon2(pentagon1);
+    EXPECT_EQ(pentagon1, pentagon2);
+}
+
+// Тест перемещения
+TEST(Pentagon_02_Test, MoveConstructor) {
+    Point_02<int> center(2, 3);
+    int side_length = 7;
+    Pentagon_02<int> pentagon1(center, side_length);
+    Pentagon_02<int> pentagon2(std::move(pentagon1));
+    EXPECT_EQ(pentagon2.Center().x, 2);
+    EXPECT_EQ(pentagon2.Center().y, 3);
+    EXPECT_EQ(pentagon2.Area(), pentagon2.Area());
+}
+
+// Тест оператора присваивания копированием
+TEST(Pentagon_02_Test, CopyAssignment) {
+    Point_02<int> center1(2, 3);
+    int side_length1 = 7;
+    Pentagon_02<int> pentagon1(center1, side_length1);
+
+    Point_02<int> center2(5, 5);
+    int side_length2 = 10;
+    Pentagon_02<int> pentagon2(center2, side_length2);
+
+    pentagon2 = pentagon1;
+
+    EXPECT_EQ(pentagon2, pentagon1);
+}
+
+// Тест оператора присваивания перемещением
+TEST(Pentagon_02_Test, MoveAssignment) {
+    Point_02<int> center1(2, 3);
+    int side_length1 = 7;
+    Pentagon_02<int> pentagon1(center1, side_length1);
+
+    Point_02<int> center2(5, 5);
+    int side_length2 = 10;
+    Pentagon_02<int> pentagon2(center2, side_length2);
+
+    pentagon2 = std::move(pentagon1);
+
+    EXPECT_EQ(pentagon2.Center().x, 2);
+    EXPECT_EQ(pentagon2.Center().y, 3);
+    EXPECT_EQ(pentagon2.Area(), pentagon2.Area());
+}
+
+// Тест метода Rotate
+TEST(Pentagon_02_Test, Rotate) {
+    Point_02<int> center(0, 0);
+    int side_length = 10;
+    Pentagon_02<int> pentagon(center, side_length);
+
+    // Копируем координаты вершин до поворота
+    std::vector<Point_02<int>> original_vertices;
+    for (const auto& vertex : pentagon.vertices) {
+        original_vertices.push_back(*vertex);
+    }
+
+    pentagon.Rotate(M_PI / 2); // Поворот на 90 градусов
+
+    // Проверка, что вершины изменились после поворота
+    bool all_vertices_changed = false;
+    for (size_t i = 0; i < original_vertices.size(); ++i) {
+        if (original_vertices[i].x != pentagon.vertices[i]->x ||
+        original_vertices[i].y != pentagon.vertices[i]->y) {
+            all_vertices_changed = true;
+            break;
+        }
+    }
+    EXPECT_TRUE(all_vertices_changed);
+}
+
+// Тест метода Translate
+TEST(Pentagon_02_Test, Translate) {
+    Point_02<int> center(0, 0);
+    int side_length = 10;
+    Pentagon_02<int> pentagon(center, side_length);
+
+    pentagon.Translate(5, 5);
+
+    EXPECT_EQ(pentagon.Center().x, 5);
+    EXPECT_EQ(pentagon.Center().y, 5);
+}
+
+// Тест метода Area
+TEST(Pentagon_02_Test, Area) {
+    Point_02<int> center(0, 0);
+    int side_length = 10;
+    Pentagon_02<int> pentagon(center, side_length);
+
+    double expected_area = (5.0 * side_length * side_length) / (4.0 * tan(M_PI / 5.0));
+    EXPECT_DOUBLE_EQ(pentagon.Area(), expected_area);
+}
+
+// Тест оператора сравнения ==
+TEST(Pentagon_02_Test, EqualityOperator) {
+    Point_02<int> center(0, 0);
+    int side_length = 10;
+    Pentagon_02<int> pentagon1(center, side_length);
+    Pentagon_02<int> pentagon2(center, side_length);
+
+    EXPECT_TRUE(pentagon1 == pentagon2);
+}
+
+// Тест оператора сравнения <
+TEST(Pentagon_02_Test, LessThanOperator) {
+    Point_02<int> center(0, 0);
+    int side_length1 = 5;
+    int side_length2 = 10;
+    Pentagon_02<int> pentagon1(center, side_length1);
+    Pentagon_02<int> pentagon2(center, side_length2);
+
+    EXPECT_TRUE(pentagon1 < pentagon2);
+}
+
+// Тест приведения к double (площади)
+TEST(Pentagon_02_Test, CastToDouble) {
+    Point_02<int> center(0, 0);
+    int side_length = 10;
+    Pentagon_02<int> pentagon(center, side_length);
+
+    double area = static_cast<double>(pentagon);
+    double expected_area = pentagon.Area();
+
+    EXPECT_DOUBLE_EQ(area, expected_area);
+}
+
+// Тест ввода/вывода
+TEST(Pentagon_02_Test, InputOutputOperators) {
+    std::stringstream ss;
+    ss << "3 4 5"; // center.x = 3, center.y = 4, side_length = 5
+    Pentagon_02<int> pentagon;
+    ss >> pentagon;
+
+    EXPECT_EQ(pentagon.Center().x, 3);
+    EXPECT_EQ(pentagon.Center().y, 4);
+    EXPECT_EQ(pentagon.Area(), pentagon.Area()); // Проверка на отсутствие NaN
+
+    std::stringstream output;
+    output << pentagon;
+    std::string output_str = output.str();
+    EXPECT_FALSE(output_str.empty());
+}
+
+// Тест метода CalculateVertices
+TEST(Pentagon_02_Test, CalculateVertices) {
+    Point_02<int> center(0, 0);
+    int side_length = 10;
+    Pentagon_02<int> pentagon(center, side_length);
+
+    pentagon.CalculateVertices();
+
+    EXPECT_EQ(pentagon.vertices.size(), 5);
+    for (const auto& vertex : pentagon.vertices) {
+        EXPECT_NEAR(std::hypot(vertex->x - center.x, vertex->y - center.y), 10, 1e-5);
+    }
+}
+
+// Тест на исключения (например, если сторона отрицательная)
+TEST(Pentagon_02_Test, NegativeSideLength) {
+    Point_02<int> center(0, 0);
+    int side_length = -10;
+
+    EXPECT_THROW({
+        Pentagon_02<int> pentagon(center, side_length);
+    }, std::invalid_argument);
+}
+
+// Тест на соответствие Правилу пяти
+TEST(Pentagon_02_Test, RuleOfFive) {
+    // Проверка на возможность копирования и перемещения
+    EXPECT_TRUE(std::is_copy_constructible<Pentagon_02<int>>::value);
+    EXPECT_TRUE(std::is_copy_assignable<Pentagon_02<int>>::value);
+    EXPECT_TRUE(std::is_move_constructible<Pentagon_02<int>>::value);
+    EXPECT_TRUE(std::is_move_assignable<Pentagon_02<int>>::value);
+}
+
+// Тест с различными типами (например, double)
+TEST(Pentagon_02_Test, DifferentScalarTypes) {
+    Point_02<double> center(0.0, 0.0);
+    double side_length = 10.5;
+    Pentagon_02<double> pentagon(center, side_length);
+
+    EXPECT_DOUBLE_EQ(pentagon.Center().x, 0.0);
+    EXPECT_DOUBLE_EQ(pentagon.Center().y, 0.0);
+    EXPECT_DOUBLE_EQ(pentagon.Area(), (5.0 * side_length * side_length) / (4.0 * tan(M_PI / 5.0)));
 }

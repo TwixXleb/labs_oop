@@ -2,7 +2,7 @@
 #ifndef LAB0_DYNAMIC_ARRAY_H
 #define LAB0_DYNAMIC_ARRAY_H
 
-#include <memory>
+#include <memory_resource>
 #include "memory_resourse.h"
 
 

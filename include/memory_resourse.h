@@ -2,7 +2,7 @@
 #ifndef LAB0_MEMORY_RESOURSE_H
 #define LAB0_MEMORY_RESOURSE_H
 
-#include <memory>
+#include <memory_resource>
 #include <map>
 
 class ReusingMemoryResource : public std::pmr::memory_resource {

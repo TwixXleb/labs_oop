@@ -1,6 +1,6 @@
 
-#ifndef LAB0_MEMORY_RESOURSE_H
-#define LAB0_MEMORY_RESOURSE_H
+#ifndef LAB0_MEMORY_RESOURSE_NEW_H
+#define LAB0_MEMORY_RESOURSE_NEW_H
 
 #include <memory_resource>
 #include <map>

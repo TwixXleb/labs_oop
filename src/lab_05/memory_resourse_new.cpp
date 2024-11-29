@@ -1,4 +1,4 @@
-#include "../../include/memory_resourse.h"
+#include "../../include/memory_resourse_new.h"
 
 void* ReusingMemoryResource::do_allocate(std::size_t bytes, std::size_t alignment) {
     for (auto it = freed_blocks.begin(); it != freed_blocks.end(); ++it) {

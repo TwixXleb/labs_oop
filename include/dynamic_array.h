@@ -3,7 +3,7 @@
 #define LAB0_DYNAMIC_ARRAY_H
 
 #include <memory>
-#include "memory_resource.h"
+#include "memory_resourse.h"
 
 
 template <typename T>

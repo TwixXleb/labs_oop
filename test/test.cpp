@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <math.h>
+#include <cmath>
 #include "../include/troll_defence.h"
 #include "../include/Money.h"
 #include "../include/Pentagon.h"
@@ -8,6 +8,13 @@
 #include "../include/Pentagon_02.h"
 #include "../include/Hexagon_02.h"
 #include "../include/Octagon_02.h"
+#include "../include/dynamic_array.h"
+
+struct MyStruct {
+    int a;
+    double b;
+    std::string c;
+};
 
 // Тесты для первой лабы
 TEST(Troll_01, BasicTest) {
@@ -340,4 +347,42 @@ TEST(Pentagon_02_Test, DifferentScalarTypes) {
     EXPECT_DOUBLE_EQ(pentagon.Center().x, 0.0);
     EXPECT_DOUBLE_EQ(pentagon.Center().y, 0.0);
     EXPECT_DOUBLE_EQ(pentagon.Area(), (5.0 * side_length * side_length) / (4.0 * tan(M_PI / 5.0)));
+}
+
+//Тесты для пятой лабы
+TEST(ReusingMemoryResourceTest, AllocateDeallocate) {
+    ReusingMemoryResource resource;
+    void* ptr1 = resource.do_allocate(100, 1);
+    void* ptr2 = resource.do_allocate(200, 1);
+    resource.do_deallocate(ptr1, 100, 1);
+    void* ptr3 = resource.do_allocate(100, 1);
+    EXPECT_EQ(ptr1, ptr3);
+}
+
+TEST(DynamicArrayTest, PushBackAndIterate) {
+    ReusingMemoryResource resource;
+    std::pmr::polymorphic_allocator<int> int_alloc(&resource);
+    DynamicArray<int> int_array(int_alloc);
+
+    int_array.push_back(10);
+    int_array.push_back(20);
+
+    int sum = 0;
+    for (auto it = int_array.begin(); it != int_array.end(); ++it) {
+        sum += *it;
+    }
+    EXPECT_EQ(sum, 30);
+}
+
+TEST(DynamicArrayTest, PushBackStruct) {
+    ReusingMemoryResource resource;
+    std::pmr::polymorphic_allocator<MyStruct> struct_alloc(&resource);
+    DynamicArray<MyStruct> struct_array(struct_alloc);
+
+    MyStruct s1 = {1, 2.5, "Hello"};
+    struct_array.push_back(s1);
+
+    EXPECT_EQ(struct_array[0].a, 1);
+    EXPECT_EQ(struct_array[0].b, 2.5);
+    EXPECT_EQ(struct_array[0].c, "Hello");
 }

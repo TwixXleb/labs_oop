@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include <cmath>
-#include <PmrDynamicArray.h>
 #include "../include/troll_defence.h"
 #include "../include/Money.h"
 #include "../include/Pentagon.h"
@@ -9,15 +8,8 @@
 #include "../include/Pentagon_02.h"
 #include "../include/Hexagon_02.h"
 #include "../include/Octagon_02.h"
-#include "../include/MapTrackingMemoryResource.h"
-#include "../include/DynamicArrayIterator.h"
-#include "../include/ComplexType.h"
-
-struct MyStruct {
-    int a;
-    double b;
-    std::string c;
-};
+#include "../include/darray_memory_resourse.h"
+#include "../include/dynamic_array.h"
 
 // Тесты для первой лабы
 TEST(Troll_01, BasicTest) {
@@ -353,85 +345,46 @@ TEST(Pentagon_02_Test, DifferentScalarTypes) {
 }
 
 //Тесты для пятой лабы
-TEST(PmrDynamicArrayTest, PushBackInt) {
-    MapTrackingMemoryResource mem_rsrc;
-    PmrDynamicArray<int> arr(&mem_rsrc);
-    EXPECT_TRUE(arr.empty());
+struct ComplexType {
+    int a;
+    double b;
+    std::string c;
+};
 
-    arr.push_back(10);
-    EXPECT_EQ(arr.size(), 1u);
-    EXPECT_EQ(arr[0], 10);
-
-    arr.push_back(20);
-    arr.push_back(30);
-    EXPECT_EQ(arr.size(), 3u);
-    EXPECT_EQ(arr[1], 20);
-    EXPECT_EQ(arr[2], 30);
-
-    int sum = 0;
-    for (auto &val : arr) {
-        sum += val;
-    }
-    EXPECT_EQ(sum, 60);
+TEST(DynamicArrayTest, PushBackAndAccess) {
+    darray_memory_resource mr;
+    DynamicArray<int> arr(&mr);
+    arr.push_back(42);
+    arr.push_back(100);
+    ASSERT_EQ(arr.size(), 2u);
+    EXPECT_EQ(arr[0], 42);
+    EXPECT_EQ(arr[1], 100);
 }
 
-TEST(PmrDynamicArrayTest, PushBackComplexType) {
-    MapTrackingMemoryResource mem_rsrc;
-    PmrDynamicArray<ComplexType> arr(&mem_rsrc);
-
-    ComplexType x{1, 1.1, "test1"};
-    ComplexType y{2, 2.2, "test2"};
-
-    arr.push_back(x);
-    arr.push_back(y);
-
-    EXPECT_EQ(arr.size(), 2u);
-    EXPECT_EQ(arr[0], x);
-    EXPECT_EQ(arr[1], y);
+TEST(DynamicArrayTest, ComplexTypeTest) {
+    darray_memory_resource mr;
+    DynamicArray<ComplexType> arr(&mr);
+    arr.push_back(ComplexType{1, 2.5, "hello"});
+    arr.push_back(ComplexType{2, 3.5, "world"});
+    ASSERT_EQ(arr.size(), 2u);
+    EXPECT_EQ(arr[0].a, 1);
+    EXPECT_DOUBLE_EQ(arr[0].b, 2.5);
+    EXPECT_EQ(arr[0].c, "hello");
+    EXPECT_EQ(arr[1].a, 2);
+    EXPECT_DOUBLE_EQ(arr[1].b, 3.5);
+    EXPECT_EQ(arr[1].c, "world");
 }
 
-TEST(PmrDynamicArrayTest, Iteration) {
-    MapTrackingMemoryResource mem_rsrc;
-    PmrDynamicArray<int> arr(&mem_rsrc);
-
+TEST(DynamicArrayTest, IteratorTest) {
+    darray_memory_resource mr;
+    DynamicArray<int> arr(&mr);
     for (int i = 0; i < 5; ++i) {
-        arr.push_back(i * 10);
+        arr.push_back(i);
     }
-
-    int expected = 0;
+    int sum = 0;
     for (auto it = arr.begin(); it != arr.end(); ++it) {
-        EXPECT_EQ(*it, expected);
-        expected += 10;
+        sum += *it;
     }
-}
-
-TEST(PmrDynamicArrayTest, MoveSemantics) {
-    MapTrackingMemoryResource mem_rsrc;
-    PmrDynamicArray<int> arr(&mem_rsrc);
-    arr.push_back(1);
-    arr.push_back(2);
-    arr.push_back(3);
-
-    PmrDynamicArray<int> arr2 = std::move(arr);
-    EXPECT_EQ(arr2.size(), 3u);
-    EXPECT_EQ(arr2[0], 1);
-    EXPECT_EQ(arr2[1], 2);
-    EXPECT_EQ(arr2[2], 3);
-    EXPECT_TRUE(arr.empty());
-}
-
-TEST(PmrDynamicArrayTest, Reserve) {
-    MapTrackingMemoryResource mem_rsrc;
-    PmrDynamicArray<int> arr(&mem_rsrc);
-    arr.reserve(10);
-    EXPECT_EQ(arr.size(), 0u);
-    EXPECT_NO_THROW({
-                        for (int i = 0; i < 10; ++i) {
-                            arr.push_back(i);
-                        }
-                    });
-    EXPECT_EQ(arr.size(), 10u);
-    for (int i = 0; i < 10; ++i) {
-        EXPECT_EQ(arr[i], i);
-    }
+    EXPECT_EQ(sum, 0+1+2+3+4);
+    EXPECT_EQ(std::distance(arr.begin(), arr.end()), 5);
 }

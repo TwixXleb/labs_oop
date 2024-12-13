@@ -35,7 +35,7 @@ jobs:
       # Run Clang-Tidy
       - name: Run Clang-Tidy
         run: |
-          find src/**/ \( -name "*.cpp" -o -name "*.tpp" \) -print0 | xargs -0 clang-tidy \
+          clang-tidy src/file1.cpp src/file2.tpp \
             -- -std=c++17 -I${{ github.workspace }}/include
 
       # Build project

@@ -27,7 +27,7 @@ jobs:
       # Run Clang-Tidy for linting C++ code
       - name: Run Clang-Tidy
         run: |
-          find src/ \( -name "*.cpp" -o -name "*.tpp" \) -print0 | xargs -0 clang-tidy \
+          clang-tidy src/**/*.cpp src/**/*.tpp \
             -- -std=c++17 \
             -I${{ github.workspace }}/include \
             -I/usr/include/c++/$(gcc -dumpversion) \

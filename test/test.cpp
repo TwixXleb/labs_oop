@@ -8,7 +8,8 @@
 #include "../include/Pentagon_02.h"
 #include "../include/Hexagon_02.h"
 #include "../include/Octagon_02.h"
-#include "../include/dynamic_array.h"
+#include <map_memory_resourse.h>
+#include <dynamic_array.h>
 
 struct MyStruct {
     int a;
@@ -350,39 +351,60 @@ TEST(Pentagon_02_Test, DifferentScalarTypes) {
 }
 
 //Тесты для пятой лабы
-TEST(ReusingMemoryResourceTest, AllocateDeallocate) {
-    ReusingMemoryResource resource;
-    void* ptr1 = resource.do_allocate(100, 1);
-    void* ptr2 = resource.do_allocate(200, 1);
-    resource.do_deallocate(ptr1, 100, 1);
-    void* ptr3 = resource.do_allocate(100, 1);
-    EXPECT_EQ(ptr1, ptr3);
+TEST(DynamicArrayTest, PushBackAndAccess) {
+    MapMemoryResource resource;
+    DynamicArray<int> array(&resource);
+
+    array.push_back(1);
+    array.push_back(2);
+    array.push_back(3);
+
+    EXPECT_EQ(array.get_size(), 3);
+    EXPECT_EQ(array[0], 1);
+    EXPECT_EQ(array[1], 2);
+    EXPECT_EQ(array[2], 3);
 }
 
-TEST(DynamicArrayTest, PushBackAndIterate) {
-    ReusingMemoryResource resource;
-    std::pmr::polymorphic_allocator<int> int_alloc(&resource);
-    DynamicArray<int> int_array(int_alloc);
+TEST(DynamicArrayTest, OutOfRangeAccess) {
+    MapMemoryResource resource;
+    DynamicArray<int> array(&resource);
 
-    int_array.push_back(10);
-    int_array.push_back(20);
+    array.push_back(1);
+    EXPECT_THROW(array[1], std::out_of_range);
+}
 
-    int sum = 0;
-    for (auto it = int_array.begin(); it != int_array.end(); ++it) {
-        sum += *it;
+TEST(DynamicArrayTest, ReallocateAndAccess) {
+    MapMemoryResource resource;
+    DynamicArray<int> array(&resource);
+
+    for (int i = 0; i < 100; ++i) {
+        array.push_back(i);
     }
-    EXPECT_EQ(sum, 30);
+
+    EXPECT_EQ(array.get_size(), 100);
+    EXPECT_EQ(array[99], 99);
 }
 
-TEST(DynamicArrayTest, PushBackStruct) {
-    ReusingMemoryResource resource;
-    std::pmr::polymorphic_allocator<MyStruct> struct_alloc(&resource);
-    DynamicArray<MyStruct> struct_array(struct_alloc);
+TEST(MapMemoryResourceTest, AllocationAndDeallocation) {
+    MapMemoryResource resource;
+    std::pmr::polymorphic_allocator<int> allocator(&resource);
 
-    MyStruct s1 = {1, 2.5, "Hello"};
-    struct_array.push_back(s1);
-
-    EXPECT_EQ(struct_array[0].a, 1);
-    EXPECT_EQ(struct_array[0].b, 2.5);
-    EXPECT_EQ(struct_array[0].c, "Hello");
+    int* ptr = allocator.allocate(10);
+    allocator.deallocate(ptr, 10);
 }
+
+TEST(MapMemoryResourceTest, MemoryLeakDetection) {
+    MapMemoryResource resource;
+    {
+        std::pmr::polymorphic_allocator<int> allocator(&resource);
+        int* ptr = allocator.allocate(10);
+        // Intentionally forget to deallocate
+    }
+    EXPECT_THROW(
+            {
+                MapMemoryResource temp_resource;
+            },
+            std::runtime_error
+    );
+}
+

@@ -1,140 +1,135 @@
-#include "../../include/dynamic_array.h"
+#include <dynamic_array.h>
 
 template <typename T>
-DynamicArray<T>::DynamicArray(allocator_type alloc)
-        : alloc(alloc), data(nullptr), size_(0), capacity_(0) {}
+void DynamicArray<T>::reallocate(std::size_t new_capacity) {
+    T* new_data = allocator.allocate(new_capacity);
+    for (std::size_t i = 0; i < size; ++i) {
+        new (new_data + i) T(std::move(data[i]));
+        data[i].~T();
+    }
+    allocator.deallocate(data, capacity);
+    data = new_data;
+    capacity = new_capacity;
+}
 
 template <typename T>
-DynamicArray<T>::DynamicArray(const DynamicArray& other)
-        : alloc(other.alloc), size_(other.size_), capacity_(other.capacity_) {
-    data = alloc.allocate(capacity_);
-    for (size_type i = 0; i < size_; ++i) {
-        alloc.construct(&data[i], other.data[i]);
+void DynamicArray<T>::destroy_elements() {
+    for (std::size_t i = 0; i < size; ++i) {
+        data[i].~T();
     }
 }
 
 template <typename T>
-DynamicArray<T>::DynamicArray(DynamicArray&& other) noexcept
-        : alloc(std::move(other.alloc)), data(other.data), size_(other.size_), capacity_(other.capacity_) {
-    other.data = nullptr;
-    other.size_ = 0;
-    other.capacity_ = 0;
+DynamicArray<T>::DynamicArray(std::pmr::memory_resource* resource)
+        : allocator(resource), data(nullptr), capacity(0), size(0) {}
+
+template <typename T>
+DynamicArray<T>::~DynamicArray() {
+    destroy_elements();
+    allocator.deallocate(data, capacity);
+}
+
+template <typename T>
+DynamicArray<T>::DynamicArray(const DynamicArray& other)
+        : allocator(other.allocator), data(nullptr), capacity(other.capacity), size(other.size) {
+    data = allocator.allocate(capacity);
+    for (std::size_t i = 0; i < size; ++i) {
+        new (data + i) T(other.data[i]);
+    }
 }
 
 template <typename T>
 DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray& other) {
     if (this != &other) {
-        for (size_type i = 0; i < size_; ++i) {
-            alloc.destroy(&data[i]);
-        }
-        alloc.deallocate(data, capacity_);
-        alloc = other.alloc;
-        size_ = other.size_;
-        capacity_ = other.capacity_;
-        data = alloc.allocate(capacity_);
-        for (size_type i = 0; i < size_; ++i) {
-            alloc.construct(&data[i], other.data[i]);
+        destroy_elements();
+        allocator.deallocate(data, capacity);
+
+        capacity = other.capacity;
+        size = other.size;
+        data = allocator.allocate(capacity);
+        for (std::size_t i = 0; i < size; ++i) {
+            new (data + i) T(other.data[i]);
         }
     }
     return *this;
+}
+
+template <typename T>
+DynamicArray<T>::DynamicArray(DynamicArray&& other) noexcept
+        : allocator(std::move(other.allocator)), data(other.data), capacity(other.capacity), size(other.size) {
+    other.data = nullptr;
+    other.capacity = 0;
+    other.size = 0;
 }
 
 template <typename T>
 DynamicArray<T>& DynamicArray<T>::operator=(DynamicArray&& other) noexcept {
     if (this != &other) {
-        for (size_type i = 0; i < size_; ++i) {
-            alloc.destroy(&data[i]);
-        }
-        alloc.deallocate(data, capacity_);
-        alloc = std::move(other.alloc);
+        destroy_elements();
+        allocator.deallocate(data, capacity);
+
+        allocator = std::move(other.allocator);
         data = other.data;
-        size_ = other.size_;
-        capacity_ = other.capacity_;
+        capacity = other.capacity;
+        size = other.size;
+
         other.data = nullptr;
-        other.size_ = 0;
-        other.capacity_ = 0;
+        other.capacity = 0;
+        other.size = 0;
     }
     return *this;
-}
-
-template <typename T>
-DynamicArray<T>::~DynamicArray() {
-    for (size_type i = 0; i < size_; ++i) {
-        alloc.destroy(&data[i]);
-    }
-    alloc.deallocate(data, capacity_);
 }
 
 template <typename T>
 void DynamicArray<T>::push_back(const T& value) {
-    if (size_ >= capacity_) {
-        capacity_ = capacity_ == 0 ? 1 : capacity_ * 2;
-        T* new_data = alloc.allocate(capacity_);
-        for (size_type i = 0; i < size_; ++i) {
-            alloc.construct(&new_data[i], data[i]);
-        }
-        for (size_type i = 0; i < size_; ++i) {
-            alloc.destroy(&data[i]);
-        }
-        alloc.deallocate(data, capacity_);
-        data = new_data;
+    if (size == capacity) {
+        reallocate(capacity == 0 ? 1 : capacity * 2);
     }
-    alloc.construct(&data[size_], value);
-    ++size_;
+    new (data + size) T(value);
+    ++size;
 }
 
 template <typename T>
-typename DynamicArray<T>::reference DynamicArray<T>::operator[](size_type index) {
+void DynamicArray<T>::push_back(T&& value) {
+    if (size == capacity) {
+        reallocate(capacity == 0 ? 1 : capacity * 2);
+    }
+    new (data + size) T(std::move(value));
+    ++size;
+}
+
+template <typename T>
+T& DynamicArray<T>::operator[](std::size_t index) {
+    if (index >= size) {
+        throw std::out_of_range("Index out of range");
+    }
     return data[index];
 }
 
 template <typename T>
-typename DynamicArray<T>::const_reference DynamicArray<T>::operator[](size_type index) const {
+const T& DynamicArray<T>::operator[](std::size_t index) const {
+    if (index >= size) {
+        throw std::out_of_range("Index out of range");
+    }
     return data[index];
 }
 
 template <typename T>
-typename DynamicArray<T>::size_type DynamicArray<T>::size() const {
-    return size_;
+std::size_t DynamicArray<T>::get_size() const {
+    return size;
 }
 
 template <typename T>
-typename DynamicArray<T>::size_type DynamicArray<T>::capacity() const {
-    return capacity_;
+std::size_t DynamicArray<T>::get_capacity() const {
+    return capacity;
 }
 
 template <typename T>
-typename DynamicArray<T>::iterator DynamicArray<T>::begin() {
-    return iterator(data);
+typename DynamicArray<T>::Iterator DynamicArray<T>::begin() {
+    return Iterator(data);
 }
 
 template <typename T>
-typename DynamicArray<T>::iterator DynamicArray<T>::end() {
-    return iterator(data + size_);
-}
-
-template <typename T>
-DynamicArray<T>::iterator::iterator(pointer ptr) : ptr_(ptr) {}
-
-template <typename T>
-typename DynamicArray<T>::iterator::reference DynamicArray<T>::iterator::operator*() const {
-    return *ptr_;
-}
-
-template <typename T>
-typename DynamicArray<T>::iterator::pointer DynamicArray<T>::iterator::operator->() const {
-    return ptr_;
-}
-
-template <typename T>
-typename DynamicArray<T>::iterator& DynamicArray<T>::iterator::operator++() {
-    ++ptr_;
-    return *this;
-}
-
-template <typename T>
-typename DynamicArray<T>::iterator DynamicArray<T>::iterator::operator++(int) {
-    iterator temp = *this;
-    ++ptr_;
-    return temp;
+typename DynamicArray<T>::Iterator DynamicArray<T>::end() {
+    return Iterator(data + size);
 }

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <cmath>
+#include <PmrDynamicArray.h>
 #include "../include/troll_defence.h"
 #include "../include/Money.h"
 #include "../include/Pentagon.h"
@@ -8,8 +9,9 @@
 #include "../include/Pentagon_02.h"
 #include "../include/Hexagon_02.h"
 #include "../include/Octagon_02.h"
-#include "../include/map_memory_resourse.h"
-#include "../include/dynamic_array.h"
+#include "../include/MapTrackingMemoryResource.h"
+#include "../include/DynamicArrayIterator.h"
+#include "../include/ComplexType.h"
 
 struct MyStruct {
     int a;
@@ -351,60 +353,85 @@ TEST(Pentagon_02_Test, DifferentScalarTypes) {
 }
 
 //Тесты для пятой лабы
-TEST(DynamicArrayTest, PushBackAndAccess) {
-    MapMemoryResource resource;
-    DynamicArray<int> array(&resource);
+TEST(PmrDynamicArrayTest, PushBackInt) {
+    MapTrackingMemoryResource mem_rsrc;
+    PmrDynamicArray<int> arr(&mem_rsrc);
+    EXPECT_TRUE(arr.empty());
 
-    array.push_back(1);
-    array.push_back(2);
-    array.push_back(3);
+    arr.push_back(10);
+    EXPECT_EQ(arr.size(), 1u);
+    EXPECT_EQ(arr[0], 10);
 
-    EXPECT_EQ(array.get_size(), 3);
-    EXPECT_EQ(array[0], 1);
-    EXPECT_EQ(array[1], 2);
-    EXPECT_EQ(array[2], 3);
+    arr.push_back(20);
+    arr.push_back(30);
+    EXPECT_EQ(arr.size(), 3u);
+    EXPECT_EQ(arr[1], 20);
+    EXPECT_EQ(arr[2], 30);
+
+    int sum = 0;
+    for (auto &val : arr) {
+        sum += val;
+    }
+    EXPECT_EQ(sum, 60);
 }
 
-TEST(DynamicArrayTest, OutOfRangeAccess) {
-    MapMemoryResource resource;
-    DynamicArray<int> array(&resource);
+TEST(PmrDynamicArrayTest, PushBackComplexType) {
+    MapTrackingMemoryResource mem_rsrc;
+    PmrDynamicArray<ComplexType> arr(&mem_rsrc);
 
-    array.push_back(1);
-    EXPECT_THROW(array[1], std::out_of_range);
+    ComplexType x{1, 1.1, "test1"};
+    ComplexType y{2, 2.2, "test2"};
+
+    arr.push_back(x);
+    arr.push_back(y);
+
+    EXPECT_EQ(arr.size(), 2u);
+    EXPECT_EQ(arr[0], x);
+    EXPECT_EQ(arr[1], y);
 }
 
-TEST(DynamicArrayTest, ReallocateAndAccess) {
-    MapMemoryResource resource;
-    DynamicArray<int> array(&resource);
+TEST(PmrDynamicArrayTest, Iteration) {
+    MapTrackingMemoryResource mem_rsrc;
+    PmrDynamicArray<int> arr(&mem_rsrc);
 
-    for (int i = 0; i < 100; ++i) {
-        array.push_back(i);
+    for (int i = 0; i < 5; ++i) {
+        arr.push_back(i * 10);
     }
 
-    EXPECT_EQ(array.get_size(), 100);
-    EXPECT_EQ(array[99], 99);
-}
-
-TEST(MapMemoryResourceTest, AllocationAndDeallocation) {
-    MapMemoryResource resource;
-    std::pmr::polymorphic_allocator<int> allocator(&resource);
-
-    int* ptr = allocator.allocate(10);
-    allocator.deallocate(ptr, 10);
-}
-
-TEST(MapMemoryResourceTest, MemoryLeakDetection) {
-    MapMemoryResource resource;
-    {
-        std::pmr::polymorphic_allocator<int> allocator(&resource);
-        int* ptr = allocator.allocate(10);
-        // Intentionally forget to deallocate
+    int expected = 0;
+    for (auto it = arr.begin(); it != arr.end(); ++it) {
+        EXPECT_EQ(*it, expected);
+        expected += 10;
     }
-    EXPECT_THROW(
-            {
-                MapMemoryResource temp_resource;
-            },
-            std::runtime_error
-    );
 }
 
+TEST(PmrDynamicArrayTest, MoveSemantics) {
+    MapTrackingMemoryResource mem_rsrc;
+    PmrDynamicArray<int> arr(&mem_rsrc);
+    arr.push_back(1);
+    arr.push_back(2);
+    arr.push_back(3);
+
+    PmrDynamicArray<int> arr2 = std::move(arr);
+    EXPECT_EQ(arr2.size(), 3u);
+    EXPECT_EQ(arr2[0], 1);
+    EXPECT_EQ(arr2[1], 2);
+    EXPECT_EQ(arr2[2], 3);
+    EXPECT_TRUE(arr.empty());
+}
+
+TEST(PmrDynamicArrayTest, Reserve) {
+    MapTrackingMemoryResource mem_rsrc;
+    PmrDynamicArray<int> arr(&mem_rsrc);
+    arr.reserve(10);
+    EXPECT_EQ(arr.size(), 0u);
+    EXPECT_NO_THROW({
+                        for (int i = 0; i < 10; ++i) {
+                            arr.push_back(i);
+                        }
+                    });
+    EXPECT_EQ(arr.size(), 10u);
+    for (int i = 0; i < 10; ++i) {
+        EXPECT_EQ(arr[i], i);
+    }
+}

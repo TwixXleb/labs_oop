@@ -8,8 +8,8 @@
 #include "../include/Pentagon_02.h"
 #include "../include/Hexagon_02.h"
 #include "../include/Octagon_02.h"
-#include <map_memory_resourse.h>
-#include <dynamic_array.h>
+#include "../include/map_memory_resourse.h"
+#include "../include/dynamic_array.h"
 
 struct MyStruct {
     int a;

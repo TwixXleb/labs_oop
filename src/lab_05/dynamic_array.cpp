@@ -1,4 +1,4 @@
-#include <dynamic_array.h>
+#include "../../include/dynamic_array.h"
 
 template <typename T>
 void DynamicArray<T>::reallocate(std::size_t new_capacity) {

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <cmath>
+#include <vector>
 #include "../include/troll_defence.h"
 #include "../include/Money.h"
 #include "../include/Pentagon.h"
@@ -8,8 +9,15 @@
 #include "../include/Pentagon_02.h"
 #include "../include/Hexagon_02.h"
 #include "../include/Octagon_02.h"
-#include "../include/darray_memory_resourse.h"
-#include "../include/dynamic_array.h"
+#include "../include/NOWAY/darray_memory_resourse.h"
+#include "../include/NOWAY/dynamic_array.h"
+#include "../include/Factory.h"
+#include "../include/Utils.h"
+#include "../include/CombatVisitor.h"
+#include "../include/Observer.h"
+#include "../include/Elf.h"
+#include "../include/Dragon.h"
+#include "../include/Druid.h"
 
 // Тесты для первой лабы
 TEST(Troll_01, BasicTest) {
@@ -387,4 +395,72 @@ TEST(DynamicArrayTest, IteratorTest) {
     }
     EXPECT_EQ(sum, 0+1+2+3+4);
     EXPECT_EQ(std::distance(arr.begin(), arr.end()), 5);
+}
+
+//Тесты для шестой лабы
+TEST(NPCTest, Creation) {
+    NPC* elf = NPCFactory::CreateNPC("Elf", "Elvin", 10, 20);
+    ASSERT_NE(elf, nullptr);
+    EXPECT_EQ(elf->GetType(), "Elf");
+    EXPECT_EQ(elf->GetName(), "Elvin");
+    EXPECT_EQ(elf->GetX(), 10);
+    EXPECT_EQ(elf->GetY(), 20);
+    EXPECT_TRUE(elf->IsAlive());
+    delete elf;
+
+    NPC* drg = NPCFactory::CreateNPC("Dragon", "Smaug", 100, 200);
+    ASSERT_NE(drg, nullptr);
+    EXPECT_EQ(drg->GetType(), "Dragon");
+    EXPECT_EQ(drg->GetName(), "Smaug");
+    EXPECT_EQ(drg->GetX(), 100);
+    EXPECT_EQ(drg->GetY(), 200);
+    EXPECT_TRUE(drg->IsAlive());
+    delete drg;
+
+    NPC* drd = NPCFactory::CreateNPC("Druid", "Greenie", 300, 400);
+    ASSERT_NE(drd, nullptr);
+    EXPECT_EQ(drd->GetType(), "Druid");
+    EXPECT_EQ(drd->GetName(), "Greenie");
+    EXPECT_EQ(drd->GetX(), 300);
+    EXPECT_EQ(drd->GetY(), 400);
+    EXPECT_TRUE(drd->IsAlive());
+    delete drd;
+}
+
+TEST(CombatTest, FightScenario) {
+    Subject subject;
+    ConsoleLoggerObserver consoleObs;
+    FileLoggerObserver fileObs;
+    subject.Attach(&consoleObs);
+    subject.Attach(&fileObs);
+
+    std::vector<NPC*> npcs;
+    npcs.push_back(NPCFactory::CreateNPC("Elf", "Elvin", 100, 100));
+    npcs.push_back(NPCFactory::CreateNPC("Dragon", "Smaug", 105, 100));
+    npcs.push_back(NPCFactory::CreateNPC("Druid", "Greenie", 200, 200));
+
+    float fightRange = 10.0f;
+    {
+        CombatVisitor visitor(npcs, fightRange, subject);
+        for (auto npc : npcs) {
+            if (npc->IsAlive())
+                npc->Accept(visitor);
+        }
+    }
+
+    int aliveCount = 0;
+    for (auto npc : npcs) {
+        if (npc->IsAlive()) aliveCount++;
+    }
+    EXPECT_EQ(aliveCount, 1);
+    bool greenieAlive = false;
+    for (auto npc : npcs) {
+        if (npc->GetName() == "Greenie" && npc->IsAlive()) {
+            greenieAlive = true;
+            break;
+        }
+    }
+    EXPECT_TRUE(greenieAlive);
+
+    for (auto npc : npcs) delete npc;
 }

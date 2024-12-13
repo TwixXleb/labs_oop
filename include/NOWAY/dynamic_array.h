@@ -118,7 +118,7 @@ public:
 
     void clear() {
         for (size_type i = 0; i < size_; ++i) {
-            alloc_.destroy(data_ + i);
+            std::allocator_traits<decltype(alloc_)>::destroy(alloc_, data_ + i);
         }
         size_ = 0;
     }
@@ -135,7 +135,7 @@ private:
         T* new_data = alloc_.allocate(new_capacity);
         for (size_type i = 0; i < size_; ++i) {
             alloc_.construct(new_data + i, std::move(data_[i]));
-            alloc_.destroy(data_ + i);
+            std::allocator_traits<decltype(alloc_)>::destroy(alloc_, data_ + i);
         }
         if (data_) {
             alloc_.deallocate(data_, capacity_);

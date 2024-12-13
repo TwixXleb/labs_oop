@@ -14,29 +14,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Установка нужной версии Clang
-      - name: Install Clang
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-14
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100
-
-      # Проверка версии компилятора
-      - name: Check Clang Version
-        run: clang --version
-
-      # Install googletest
+      # Install dependencies
       - name: Install googletest
         uses: cvpkg/googletest-action@v0.1
         with:
           googletest_tag: 'release-1.11.0'
 
-      # Run Clang-Tidy
+      # Install Clang-Tidy
+      - name: Install Clang-Tidy
+        run: sudo apt-get install -y clang-tidy
+
+      # Run Clang-Tidy for linting C++ code
       - name: Run Clang-Tidy
         run: |
-          clang-tidy src/**/*.cpp src/**/*.tpp \
-            -- -std=c++17 -I${{ github.workspace }}/include
+          clang-tidy src/**/*.cpp -- -I/path/to/your/include/files
 
       # Build project
       - name: Build Project

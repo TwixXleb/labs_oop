@@ -64,5 +64,5 @@ public:
     Iterator end();
 };
 
-#include "dynamic_array.tpp"
+#include "../src/lab_05/dynamic_array.tpp"
 #endif // DYNAMIC_ARRAY_H

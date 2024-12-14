@@ -18,10 +18,10 @@
 #include "../include/Elf.h"
 #include "../include/Dragon.h"
 #include "../include/Druid.h"
-#include "../include/CombatVisitor_v2.h"
-#include "../include/Observer_v2.h"
-#include "../include/MovementFightCoroutine.h"
-#include "../include/CoroutineHelpers.h"
+#include "NOWAY/CombatVisitor_v2.h"
+#include "NOWAY/Observer_v2.h"
+#include "NOWAY/MovementFightCoroutine.h"
+#include "NOWAY/CoroutineHelpers.h"
 
 // Тесты для первой лабы
 TEST(Troll_01, BasicTest) {

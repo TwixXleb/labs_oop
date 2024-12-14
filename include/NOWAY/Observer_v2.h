@@ -1,5 +1,5 @@
-#ifndef LAB0_OBSERVER_H
-#define LAB0_OBSERVER_H
+#ifndef LAB0_OBSERVER_V2_H
+#define LAB0_OBSERVER_V2_H
 
 #include <string>
 #include <vector>
@@ -38,4 +38,4 @@ public:
                 const std::string &victimType, const std::string &victimName) override;
 };
 
-#endif //LAB0_OBSERVER_H
+#endif //LAB0_OBSERVER_V2_H

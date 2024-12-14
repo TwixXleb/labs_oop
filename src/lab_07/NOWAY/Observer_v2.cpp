@@ -1,4 +1,4 @@
-#include "../../include/Observer_v2.h"
+#include "../../../include/NOWAY/Observer_v2.h"
 
 std::mutex cout_mutex;
 

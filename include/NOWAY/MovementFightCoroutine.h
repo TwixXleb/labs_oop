@@ -1,7 +1,7 @@
 #ifndef LAB0_MOVEMENTFIGHTCOROUTINE_H
 #define LAB0_MOVEMENTFIGHTCOROUTINE_H
 
-#include "NPC.h"
+#include "../NPC.h"
 #include "Observer_v2.h"
 #include "CombatVisitor_v2.h"
 #include "CoroutineHelpers.h"

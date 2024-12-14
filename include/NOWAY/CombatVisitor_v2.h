@@ -1,8 +1,8 @@
-#ifndef LAB0_COMBATVISITOR_H
-#define LAB0_COMBATVISITOR_H
+#ifndef LAB0_COMBATVISITOR_V2_H
+#define LAB0_COMBATVISITOR_V2_H
 
-#include "classVisitor.h"
-#include "NPC.h"
+#include "../classVisitor.h"
+#include "../NPC.h"
 #include "Observer_v2.h"
 #include <vector>
 #include <mutex>
@@ -27,4 +27,4 @@ private:
     void ExecuteFights(const std::string &attackerType);
 };
 
-#endif //LAB0_COMBATVISITOR_H
+#endif //LAB0_COMBATVISITOR_V2_H

@@ -1,5 +1,5 @@
-#include "../../include/MovementFightCoroutine.h"
-#include "../../include/CombatVisitor_v2.h"
+#include "../../../include/NOWAY/MovementFightCoroutine.h"
+#include "../../../include/NOWAY/CombatVisitor_v2.h"
 #include <vector>
 #include <string>
 #include <mutex>

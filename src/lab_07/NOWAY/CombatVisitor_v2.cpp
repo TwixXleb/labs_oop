@@ -1,7 +1,7 @@
-#include "../../include/CombatVisitor_v2.h"
-#include "../../include/Elf.h"
-#include "../../include/Dragon.h"
-#include "../../include/Druid.h"
+#include "../../../include/NOWAY/CombatVisitor_v2.h"
+#include "../../../include/Elf.h"
+#include "../../../include/Dragon.h"
+#include "../../../include/Druid.h"
 #include <cmath>
 #include <cstdlib>
 #include <random>

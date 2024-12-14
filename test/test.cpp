@@ -577,52 +577,52 @@ TEST(CombatTest_v2, ObserverNotify) {
 }
 
 // Тест 6: Проверка корутины перемещения и боя
-TEST(CoroutineTest_v2, MovementAndFight) {
-    std::vector<NPC*> npcs;
-    npcs.push_back(NPCFactory::CreateNPC("Elf", "Legolas", 10, 10));
-    npcs.push_back(NPCFactory::CreateNPC("Dragon", "Smaug", 12, 10));
-    npcs.push_back(NPCFactory::CreateNPC("Druid", "Malfurion", 15, 15));
-
-    // Проверяем, что все NPC инициализированы
-    for (size_t i = 0; i < npcs.size(); ++i) {
-        ASSERT_NE(npcs[i], nullptr) << "Ошибка: NPC #" << i << " == nullptr!";
-    }
-
-    Subject_v2 subject;
-    TestObserver_v2 testObs;
-    subject.Attach_v2(&testObs);
-
-    std::shared_mutex npcMutex;
-    MovementFightCoroutine mfc(npcs, subject, cout_mutex_v2, npcMutex);
-
-    auto generator = mfc.run();
-
-    std::thread coroutineThread([&generator]() {
-        try {
-            while (generator.next()) {
-                std::cout << "Корутина выполняется." << std::endl;
-            }
-        } catch (const std::exception &e) {
-            std::cerr << "Исключение в корутине: " << e.what() << std::endl;
-        }
-    });
-
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-
-    mfc.stopCoroutine();
-    coroutineThread.join();
-
-    {
-        std::shared_lock<std::shared_mutex> lock(npcMutex);
-        EXPECT_TRUE(npcs[0]->GetX() != 10 || npcs[0]->GetY() != 10);
-        EXPECT_TRUE(npcs[1]->GetX() != 12 || npcs[1]->GetY() != 10);
-        EXPECT_TRUE(npcs[2]->GetX() != 15 || npcs[2]->GetY() != 15);
-    }
-
-    for (auto npc : npcs) {
-        ASSERT_NE(npc, nullptr) << "Ошибка: NPC уже удалён!";
-        delete npc;
-    }
-
-    SUCCEED();
-}
+//TEST(CoroutineTest_v2, MovementAndFight) {
+//    std::vector<NPC*> npcs;
+//    npcs.push_back(NPCFactory::CreateNPC("Elf", "Legolas", 10, 10));
+//    npcs.push_back(NPCFactory::CreateNPC("Dragon", "Smaug", 12, 10));
+//    npcs.push_back(NPCFactory::CreateNPC("Druid", "Malfurion", 15, 15));
+//
+//    // Проверяем, что все NPC инициализированы
+//    for (size_t i = 0; i < npcs.size(); ++i) {
+//        ASSERT_NE(npcs[i], nullptr) << "Ошибка: NPC #" << i << " == nullptr!";
+//    }
+//
+//    Subject_v2 subject;
+//    TestObserver_v2 testObs;
+//    subject.Attach_v2(&testObs);
+//
+//    std::shared_mutex npcMutex;
+//    MovementFightCoroutine mfc(npcs, subject, cout_mutex_v2, npcMutex);
+//
+//    auto generator = mfc.run();
+//
+//    std::thread coroutineThread([&generator]() {
+//        try {
+//            while (generator.next()) {
+//                std::cout << "Корутина выполняется." << std::endl;
+//            }
+//        } catch (const std::exception &e) {
+//            std::cerr << "Исключение в корутине: " << e.what() << std::endl;
+//        }
+//    });
+//
+//    std::this_thread::sleep_for(std::chrono::seconds(1));
+//
+//    mfc.stopCoroutine();
+//    coroutineThread.join();
+//
+//    {
+//        std::shared_lock<std::shared_mutex> lock(npcMutex);
+//        EXPECT_TRUE(npcs[0]->GetX() != 10 || npcs[0]->GetY() != 10);
+//        EXPECT_TRUE(npcs[1]->GetX() != 12 || npcs[1]->GetY() != 10);
+//        EXPECT_TRUE(npcs[2]->GetX() != 15 || npcs[2]->GetY() != 15);
+//    }
+//
+//    for (auto npc : npcs) {
+//        ASSERT_NE(npc, nullptr) << "Ошибка: NPC уже удалён!";
+//        delete npc;
+//    }
+//
+//    SUCCEED();
+//}

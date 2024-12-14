@@ -43,6 +43,9 @@ jobs:
           gdb -batch -ex "run" -ex "bt" --args ./build/*_test > gdb_output.txt || true
         continue-on-error: true
 
+      - name: Show gdb output in logs
+          run: cat gdb_output.txt
+
       # Run tests
       - name: Run Tests
         run: make test

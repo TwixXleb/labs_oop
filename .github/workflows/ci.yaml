@@ -29,10 +29,18 @@ jobs:
         run: |
           clang-tidy src/**/*.cpp -- -I/path/to/your/include/files
 
+      - name: Install gdb
+        run: sudo apt-get install -y gdb
+
       # Build project
       - name: Build Project
         run: make build
 
       # Run tests
+      - - name: Run tests with gdb
+          run: |
+            gdb -batch -ex "run" -ex "bt" --args ./lab0_test > gdb_output.txt || true
+          continue-on-error: true
+
       - name: Run Tests
         run: make test

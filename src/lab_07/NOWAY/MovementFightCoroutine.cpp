@@ -19,6 +19,7 @@ Generator MovementFightCoroutine::run() {
 
         {
             std::unique_lock<std::shared_mutex> lock(npcMutex);
+
             for (auto npc : npcs) {
                 if (!npc || !npc->IsAlive()) continue;
 
@@ -44,12 +45,23 @@ Generator MovementFightCoroutine::run() {
                     float distance = std::sqrt(dx * dx + dy * dy);
 
                     if (distance <= 3.0f) {
-                        CombatVisitor_v2 visitor(npcs, 3.0f, subject, cout_mutex);
-                        attacker->Accept(visitor);
+                        bool canAttack = false;
+                        std::string aType = attacker->GetType();
+                        std::string vType = victim->GetType();
+
+                        if ((aType == "Dragon" && vType == "Elf") ||
+                            (aType == "Elf" && vType == "Druid") ||
+                            (aType == "Druid" && vType == "Dragon")) {
+                            canAttack = true;
+                        }
+
+                        if (canAttack) {
+                            CombatVisitor_v2 visitor(npcs, 3.0f, subject, cout_mutex);
+                            attacker->Accept(visitor);
+                        }
                     }
                 }
             }
         }
     }
 }
-

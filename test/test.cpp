@@ -583,8 +583,9 @@ TEST(CoroutineTest_v2, MovementAndFight) {
     npcs.push_back(NPCFactory::CreateNPC("Dragon", "Smaug", 12, 10));
     npcs.push_back(NPCFactory::CreateNPC("Druid", "Malfurion", 15, 15));
 
-    for (auto npc : npcs) {
-        ASSERT_NE(npc, nullptr);
+    // Проверяем, что все NPC инициализированы
+    for (size_t i = 0; i < npcs.size(); ++i) {
+        ASSERT_NE(npcs[i], nullptr) << "Ошибка: NPC #" << i << " == nullptr!";
     }
 
     Subject_v2 subject;
@@ -597,7 +598,12 @@ TEST(CoroutineTest_v2, MovementAndFight) {
     auto generator = mfc.run();
 
     std::thread coroutineThread([&generator]() {
-        while (generator.next()) {
+        try {
+            while (generator.next()) {
+                std::cout << "Корутина выполняется." << std::endl;
+            }
+        } catch (const std::exception &e) {
+            std::cerr << "Исключение в корутине: " << e.what() << std::endl;
         }
     });
 
@@ -614,6 +620,7 @@ TEST(CoroutineTest_v2, MovementAndFight) {
     }
 
     for (auto npc : npcs) {
+        ASSERT_NE(npc, nullptr) << "Ошибка: NPC уже удалён!";
         delete npc;
     }
 

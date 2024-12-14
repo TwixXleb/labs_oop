@@ -480,9 +480,6 @@ public:
     }
 };
 
-// Глобальный мьютекс для тестов
-std::mutex cout_mutex_v2;
-
 // Тест 1: Проверка создания NPC через фабрику
 TEST(NPCTest_v2, Creation) {
     NPC* elf = NPCFactory::CreateNPC("Elf", "Legolas", 10, 20);

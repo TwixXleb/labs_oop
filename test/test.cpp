@@ -470,20 +470,21 @@ TEST(CombatTest, FightScenario) {
 }
 
 //Тесты седьмой лабы
-class TestObserver : public Observer {
+// Тестовый Observer для проверки уведомлений
+class TestObserver_v2 : public Observer_v2 {
 public:
     std::vector<std::string> kills;
-    void OnKill(const std::string &killerType, const std::string &killerName,
-                const std::string &victimType, const std::string &victimName) override {
+    void OnKill_v2(const std::string &killerType, const std::string &killerName,
+                   const std::string &victimType, const std::string &victimName) override {
         kills.emplace_back(killerType + " " + killerName + " убил " + victimType + " " + victimName);
     }
 };
 
 // Глобальный мьютекс для тестов
-std::mutex cout_mutex;
+std::mutex cout_mutex_v2;
 
 // Тест 1: Проверка создания NPC через фабрику
-TEST(NPCTest, Creation) {
+TEST(NPCTest_v2, Creation) {
     NPC* elf = NPCFactory::CreateNPC("Elf", "Legolas", 10, 20);
     ASSERT_NE(elf, nullptr);
     EXPECT_EQ(elf->GetType(), "Elf");
@@ -513,7 +514,7 @@ TEST(NPCTest, Creation) {
 }
 
 // Тест 2: Проверка перемещения NPC
-TEST(NPCTest, Movement) {
+TEST(NPCTest_v2, Movement) {
     NPC* elf = NPCFactory::CreateNPC("Elf", "Mover", 10, 20);
     elf->SetPosition(15, 25);
     EXPECT_EQ(elf->GetX(), 15);
@@ -522,7 +523,7 @@ TEST(NPCTest, Movement) {
 }
 
 // Тест 3: Проверка убийства NPC
-TEST(NPCTest, Kill) {
+TEST(NPCTest_v2, Kill) {
     NPC* elf = NPCFactory::CreateNPC("Elf", "Fallen", 10, 20);
     EXPECT_TRUE(elf->IsAlive());
     elf->Kill();
@@ -530,21 +531,19 @@ TEST(NPCTest, Kill) {
     delete elf;
 }
 
-// Тест 4: Проверка боя через CombatVisitor
-TEST(CombatTest, BasicFight) {
+// Тест 4: Проверка боя через CombatVisitor_v2
+TEST(CombatTest_v2, BasicFight) {
     std::vector<NPC*> npcs;
     npcs.push_back(NPCFactory::CreateNPC("Elf", "Legolas", 10, 10));
     npcs.push_back(NPCFactory::CreateNPC("Druid", "Malfurion", 11, 10));
 
-    Subject subject;
-    TestObserver testObs;
-    subject.Attach(&testObs);
+    Subject_v2 subject;
+    TestObserver_v2 testObs;
+    subject.Attach_v2(&testObs);
 
-    CombatVisitor visitor(npcs, 3.0f, subject, cout_mutex);
+    CombatVisitor_v2 visitor(npcs, 3.0f, subject, cout_mutex_v2);
 
     npcs[0]->Accept(visitor);
-
-    EXPECT_TRUE(!npcs[1]->IsAlive() || npcs[1]->IsAlive());
 
     if (!npcs[1]->IsAlive()) {
         ASSERT_EQ(testObs.kills.size(), 1);
@@ -557,20 +556,18 @@ TEST(CombatTest, BasicFight) {
 }
 
 // Тест 5: Проверка Observer при убийстве
-TEST(CombatTest, ObserverNotify) {
+TEST(CombatTest_v2, ObserverNotify) {
     std::vector<NPC*> npcs;
     npcs.push_back(NPCFactory::CreateNPC("Dragon", "Smaug", 10, 10));
     npcs.push_back(NPCFactory::CreateNPC("Elf", "Legolas", 11, 10));
 
-    Subject subject;
-    TestObserver testObs;
-    subject.Attach(&testObs);
+    Subject_v2 subject;
+    TestObserver_v2 testObs;
+    subject.Attach_v2(&testObs);
 
-    CombatVisitor visitor(npcs, 3.0f, subject, cout_mutex);
+    CombatVisitor_v2 visitor(npcs, 3.0f, subject, cout_mutex_v2);
 
     npcs[0]->Accept(visitor);
-
-    EXPECT_TRUE(!npcs[1]->IsAlive() || npcs[1]->IsAlive());
 
     if (!npcs[1]->IsAlive()) {
         ASSERT_EQ(testObs.kills.size(), 1);
@@ -583,18 +580,18 @@ TEST(CombatTest, ObserverNotify) {
 }
 
 // Тест 6: Проверка корутины перемещения и боя
-TEST(CoroutineTest, MovementAndFight) {
+TEST(CoroutineTest_v2, MovementAndFight) {
     std::vector<NPC*> npcs;
     npcs.push_back(NPCFactory::CreateNPC("Elf", "Legolas", 10, 10));
     npcs.push_back(NPCFactory::CreateNPC("Dragon", "Smaug", 12, 10));
     npcs.push_back(NPCFactory::CreateNPC("Druid", "Malfurion", 15, 15));
 
-    Subject subject;
-    TestObserver testObs;
-    subject.Attach(&testObs);
+    Subject_v2 subject;
+    TestObserver_v2 testObs;
+    subject.Attach_v2(&testObs);
 
     std::shared_mutex npcMutex;
-    MovementFightCoroutine mfc(npcs, subject, cout_mutex, npcMutex);
+    MovementFightCoroutine mfc(npcs, subject, cout_mutex_v2, npcMutex);
     auto generator = mfc.run();
 
     std::thread coroutineThread([&generator]() {

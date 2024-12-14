@@ -6,38 +6,38 @@
 #include <cstdlib>
 #include <random>
 
-CombatVisitor::CombatVisitor(std::vector<NPC*> &allNpcs, float range, Subject &subj, std::mutex &cmutex)
-        : npcs(allNpcs), fightRange(range), subject(subj), attacker(nullptr), cout_mutex(cmutex) {}
+CombatVisitor_v2::CombatVisitor_v2(std::vector<NPC*> &allNpcs, float range, Subject_v2 &subj, std::mutex &cmutex)
+        : npcs_v2(allNpcs), fightRange_v2(range), subject_v2(subj), attacker_v2(nullptr), cout_mutex_v2(cmutex) {}
 
-void CombatVisitor::Visit(Elf &elf) {
-    attacker = &elf;
-    ExecuteFights("Elf");
+void CombatVisitor_v2::Visit(Elf &elf) {
+    attacker_v2 = &elf;
+    ExecuteFights_v2("Elf");
 }
 
-void CombatVisitor::Visit(Dragon &dragon) {
-    attacker = &dragon;
-    ExecuteFights("Dragon");
+void CombatVisitor_v2::Visit(Dragon &dragon) {
+    attacker_v2 = &dragon;
+    ExecuteFights_v2("Dragon");
 }
 
-void CombatVisitor::Visit(Druid &druid) {
-    attacker = &druid;
-    ExecuteFights("Druid");
+void CombatVisitor_v2::Visit(Druid &druid) {
+    attacker_v2 = &druid;
+    ExecuteFights_v2("Druid");
 }
 
-bool CombatVisitor::CanAttack(const std::string &attackerType, const std::string &victimType) {
+bool CombatVisitor_v2::CanAttack_v2(const std::string &attackerType, const std::string &victimType) {
     if (attackerType == "Dragon" && victimType == "Elf") return true;
     if (attackerType == "Elf" && victimType == "Druid") return true;
     if (attackerType == "Druid" && victimType == "Dragon") return true;
     return false;
 }
 
-float CombatVisitor::Distance(NPC *a, NPC *b) {
+float CombatVisitor_v2::Distance_v2(NPC *a, NPC *b) {
     float dx = static_cast<float>(a->GetX() - b->GetX());
     float dy = static_cast<float>(a->GetY() - b->GetY());
-    return std::sqrt(dx*dx + dy*dy);
+    return std::sqrt(dx * dx + dy * dy);
 }
 
-void CombatVisitor::Fight(NPC *attacker, NPC *victim) {
+void CombatVisitor_v2::Fight_v2(NPC *attacker, NPC *victim) {
     if (!attacker->IsAlive() || !victim->IsAlive()) return;
 
     // Бросаем кубики
@@ -49,27 +49,27 @@ void CombatVisitor::Fight(NPC *attacker, NPC *victim) {
     int defenseRoll = dis(gen);
 
     {
-        std::lock_guard<std::mutex> lg(cout_mutex);
-        std::cout << attacker->GetType() << " " << attacker->GetName()
+        std::lock_guard<std::mutex> lg(cout_mutex_v2);
+        std::cout << "[V2] " << attacker->GetType() << " " << attacker->GetName()
                   << " атакует " << victim->GetType() << " " << victim->GetName()
                   << " (Атака: " << attackRoll << " vs Защита: " << defenseRoll << ")\n";
     }
 
     if (attackRoll > defenseRoll) {
         victim->Kill();
-        subject.NotifyKill(attacker->GetType(), attacker->GetName(),
-                           victim->GetType(), victim->GetName());
+        subject_v2.NotifyKill_v2(attacker->GetType(), attacker->GetName(),
+                                 victim->GetType(), victim->GetName());
     }
 }
 
-void CombatVisitor::ExecuteFights(const std::string &attackerType) {
-    if (!attacker || !attacker->IsAlive()) return;
-    for (auto victim : npcs) {
-        if (victim == attacker) continue;
+void CombatVisitor_v2::ExecuteFights_v2(const std::string &attackerType) {
+    if (!attacker_v2 || !attacker_v2->IsAlive()) return;
+    for (auto victim : npcs_v2) {
+        if (victim == attacker_v2) continue;
         if (!victim->IsAlive()) continue;
-        if (Distance(attacker, victim) <= fightRange && CanAttack(attackerType, victim->GetType())) {
-            Fight(attacker, victim);
-            if (!attacker->IsAlive()) break;
+        if (Distance_v2(attacker_v2, victim) <= fightRange_v2 && CanAttack_v2(attackerType, victim->GetType())) {
+            Fight_v2(attacker_v2, victim);
+            if (!attacker_v2->IsAlive()) break;
         }
     }
 }

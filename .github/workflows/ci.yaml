@@ -40,7 +40,7 @@ jobs:
       #Run tests with gdb
       - name: Run tests with gdb
         run: |
-          gdb -batch -ex "run" -ex "bt" --args ./lab0_test > gdb_output.txt || true
+          gdb -batch -ex "run" -ex "bt" --args ./build/*_test > gdb_output.txt || true
         continue-on-error: true
 
       # Run tests

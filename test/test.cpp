@@ -583,12 +583,17 @@ TEST(CoroutineTest_v2, MovementAndFight) {
     npcs.push_back(NPCFactory::CreateNPC("Dragon", "Smaug", 12, 10));
     npcs.push_back(NPCFactory::CreateNPC("Druid", "Malfurion", 15, 15));
 
+    for (auto npc : npcs) {
+        ASSERT_NE(npc, nullptr);
+    }
+
     Subject_v2 subject;
     TestObserver_v2 testObs;
     subject.Attach_v2(&testObs);
 
     std::shared_mutex npcMutex;
     MovementFightCoroutine mfc(npcs, subject, cout_mutex_v2, npcMutex);
+
     auto generator = mfc.run();
 
     std::thread coroutineThread([&generator]() {
@@ -597,6 +602,7 @@ TEST(CoroutineTest_v2, MovementAndFight) {
     });
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
+
     mfc.stopCoroutine();
     coroutineThread.join();
 
@@ -607,9 +613,9 @@ TEST(CoroutineTest_v2, MovementAndFight) {
         EXPECT_TRUE(npcs[2]->GetX() != 15 || npcs[2]->GetY() != 15);
     }
 
-    SUCCEED();
-
     for (auto npc : npcs) {
         delete npc;
     }
+
+    SUCCEED();
 }

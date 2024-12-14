@@ -39,7 +39,7 @@ Generator MovementFightCoroutine::run() {
                     if (!victim->IsAlive()) continue;
                     float dx = static_cast<float>(attacker->GetX() - victim->GetX());
                     float dy = static_cast<float>(attacker->GetY() - victim->GetY());
-                    float distance = std::sqrt(dx*dx + dy*dy);
+                    float distance = std::sqrt(dx * dx + dy * dy);
                     if (distance <= 3.0f) {
                         bool canAttack = false;
                         std::string aType = attacker->GetType();
@@ -51,7 +51,7 @@ Generator MovementFightCoroutine::run() {
                         }
 
                         if (canAttack) {
-                            CombatVisitor visitor(npcs, 3.0f, subject, cout_mutex);
+                            CombatVisitor_v2 visitor(npcs, 3.0f, subject, cout_mutex);
                             attacker->Accept(visitor);
                         }
                     }

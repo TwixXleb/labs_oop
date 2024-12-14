@@ -13,7 +13,7 @@
 
 class MovementFightCoroutine {
 public:
-    MovementFightCoroutine(std::vector<NPC*> &npcs, Subject &subject, std::mutex &cout_mtx, std::shared_mutex &npc_mtx)
+    MovementFightCoroutine(std::vector<NPC*> &npcs, Subject_v2 &subject, std::mutex &cout_mtx, std::shared_mutex &npc_mtx)
             : npcs(npcs), subject(subject), cout_mutex(cout_mtx), npcMutex(npc_mtx) {}
 
     Generator run();
@@ -24,7 +24,7 @@ public:
 
 private:
     std::vector<NPC*> &npcs;
-    Subject &subject;
+    Subject_v2 &subject;
     std::mutex &cout_mutex;
     std::shared_mutex &npcMutex;
     std::atomic<bool> stop{false};
